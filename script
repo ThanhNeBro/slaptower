@@ -1,0 +1,141 @@
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+local TweenService = game:GetService("TweenService")
+local player = Players.LocalPlayer
+
+local auto = false
+local toolMode = false
+
+local function superSlap(target)
+    if target and target:FindFirstChild("HumanoidRootPart") then
+        target.HumanoidRootPart.Velocity = Vector3.new(0, 500000, 500000)
+    end
+end
+
+local function autoSlap()
+    while true do
+        if auto then
+            for _, enemy in pairs(Players:GetPlayers()) do
+                if enemy ~= player and enemy.Character and enemy.Character:FindFirstChild("HumanoidRootPart") then
+                    superSlap(enemy.Character)
+                end
+            end
+        end
+        task.wait(0.2)
+    end
+end
+
+local function setupTool(char)
+    char.ChildAdded:Connect(function(tool)
+        if tool:IsA("Tool") then
+            tool.Activated:Connect(function()
+                if toolMode then
+                    for _, enemy in pairs(Players:GetPlayers()) do
+                        if enemy ~= player and enemy.Character and enemy.Character:FindFirstChild("HumanoidRootPart") then
+                            local hrp = enemy.Character.HumanoidRootPart
+                            local distance = (hrp.Position - char.HumanoidRootPart.Position).magnitude
+                            if distance < 10 then
+                                superSlap(enemy.Character)
+                            end
+                        end
+                    end
+                end
+            end)
+        end
+    end)
+end
+
+if player.Character then
+    setupTool(player.Character)
+end
+player.CharacterAdded:Connect(setupTool)
+task.spawn(autoSlap)
+
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "ThanhNeBro"
+ScreenGui.Parent = game.CoreGui
+
+local bigText = Instance.new("TextLabel")
+bigText.Size = UDim2.new(1, 0, 0, 100)
+bigText.Position = UDim2.new(0, 0, 0.4, 0)
+bigText.Text = "☠️ ThanhNeBro ☠️"
+bigText.TextScaled = true
+bigText.Font = Enum.Font.GothamBlack
+bigText.TextColor3 = Color3.fromRGB(255, 180, 0)
+bigText.BackgroundTransparency = 1
+bigText.Parent = ScreenGui
+
+local fadeTween = TweenService:Create(bigText, TweenInfo.new(3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextTransparency = 1})
+fadeTween:Play()
+task.delay(3, function()
+    bigText:Destroy()
+end)
+
+local Frame = Instance.new("Frame")
+Frame.Size = UDim2.new(0, 250, 0, 140)
+Frame.Position = UDim2.new(0.5, -125, 0.5, -70)
+Frame.BackgroundColor3 = Color3.fromRGB(25,25,25)
+Frame.BackgroundTransparency = 0.1
+Frame.Active = true
+Frame.Draggable = true
+Frame.Parent = ScreenGui
+
+local UICorner = Instance.new("UICorner")
+UICorner.CornerRadius = UDim.new(0, 10)
+UICorner.Parent = Frame
+
+local Header = Instance.new("Frame")
+Header.Size = UDim2.new(1, 0, 0, 40)
+Header.BackgroundColor3 = Color3.fromRGB(35,35,35)
+Header.Parent = Frame
+
+local HeaderCorner = Instance.new("UICorner")
+HeaderCorner.CornerRadius = UDim.new(0, 10)
+HeaderCorner.Parent = Header
+
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, 0, 1, 0)
+title.Text = "☠️ ThanhNeBro ☠️"
+title.TextScaled = true
+title.TextColor3 = Color3.fromRGB(255,200,0)
+title.BackgroundTransparency = 1
+title.Font = Enum.Font.GothamBold
+title.Parent = Header
+
+local function createToggle(name, yPos, callback)
+    local btn = Instance.new("TextButton")
+    btn.Size = UDim2.new(1, -40, 0, 35)
+    btn.Position = UDim2.new(0, 20, 0, yPos)
+    btn.Text = name .. ": OFF"
+    btn.TextScaled = true
+    btn.Font = Enum.Font.GothamSemibold
+    btn.TextColor3 = Color3.new(1,1,1)
+    btn.BackgroundColor3 = Color3.fromRGB(50,50,50)
+    btn.Parent = Frame
+
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, 8)
+    corner.Parent = btn
+
+    btn.MouseButton1Click:Connect(function()
+        local state = callback()
+        btn.Text = name .. ": " .. (state and "ON" or "OFF")
+        btn.BackgroundColor3 = state and Color3.fromRGB(0,170,0) or Color3.fromRGB(50,50,50)
+    end)
+end
+
+createToggle("Auto Slap", 50, function()
+    auto = not auto
+    return auto
+end)
+
+createToggle("Tool Slap", 90, function()
+    toolMode = not toolMode
+    return toolMode
+end)
+
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if not gameProcessed and input.KeyCode == Enum.KeyCode.P then
+        Frame.Visible = not Frame.Visible
+    end
+end)
