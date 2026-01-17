@@ -1,141 +1,155 @@
-local Players = game:GetService("Players")
-local UserInputService = game:GetService("UserInputService")
-local TweenService = game:GetService("TweenService")
-local player = Players.LocalPlayer
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>Tthanhhub All Script</title>
+<style>
+    body {
+        background: #0f0f0f;
+        color: #fff;
+        font-family: Arial, sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+    }
 
-local auto = false
-local toolMode = false
+    .container {
+        background: #151515;
+        padding: 25px;
+        border-radius: 12px;
+        width: 420px;
+        box-shadow: 0 0 20px rgba(0,0,0,0.7);
+    }
 
-local function superSlap(target)
-    if target and target:FindFirstChild("HumanoidRootPart") then
-        target.HumanoidRootPart.Velocity = Vector3.new(0, 500000, 500000)
-    end
-end
+    h1 {
+        text-align: center;
+        margin-bottom: 10px;
+    }
 
-local function autoSlap()
-    while true do
-        if auto then
-            for _, enemy in pairs(Players:GetPlayers()) do
-                if enemy ~= player and enemy.Character and enemy.Character:FindFirstChild("HumanoidRootPart") then
-                    superSlap(enemy.Character)
-                end
-            end
-        end
-        task.wait(0.2)
-    end
-end
+    p {
+        text-align: center;
+        color: #aaa;
+    }
 
-local function setupTool(char)
-    char.ChildAdded:Connect(function(tool)
-        if tool:IsA("Tool") then
-            tool.Activated:Connect(function()
-                if toolMode then
-                    for _, enemy in pairs(Players:GetPlayers()) do
-                        if enemy ~= player and enemy.Character and enemy.Character:FindFirstChild("HumanoidRootPart") then
-                            local hrp = enemy.Character.HumanoidRootPart
-                            local distance = (hrp.Position - char.HumanoidRootPart.Position).magnitude
-                            if distance < 10 then
-                                superSlap(enemy.Character)
-                            end
-                        end
-                    end
-                end
-            end)
-        end
-    end)
-end
+    .row {
+        display: flex;
+        gap: 8px;
+        margin-top: 15px;
+    }
 
-if player.Character then
-    setupTool(player.Character)
-end
-player.CharacterAdded:Connect(setupTool)
-task.spawn(autoSlap)
+    input {
+        flex: 1;
+        padding: 10px;
+        border-radius: 8px;
+        border: none;
+        outline: none;
+        background: #222;
+        color: #fff;
+    }
 
-local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "ThanhNeBro"
-ScreenGui.Parent = game.CoreGui
+    button {
+        padding: 10px 14px;
+        border-radius: 8px;
+        border: none;
+        cursor: pointer;
+        background: #4f46e5;
+        color: #fff;
+        font-weight: bold;
+    }
 
-local bigText = Instance.new("TextLabel")
-bigText.Size = UDim2.new(1, 0, 0, 100)
-bigText.Position = UDim2.new(0, 0, 0.4, 0)
-bigText.Text = "☠️ ThanhNeBro ☠️"
-bigText.TextScaled = true
-bigText.Font = Enum.Font.GothamBlack
-bigText.TextColor3 = Color3.fromRGB(255, 180, 0)
-bigText.BackgroundTransparency = 1
-bigText.Parent = ScreenGui
+    button:hover {
+        opacity: 0.85;
+    }
 
-local fadeTween = TweenService:Create(bigText, TweenInfo.new(3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextTransparency = 1})
-fadeTween:Play()
-task.delay(3, function()
-    bigText:Destroy()
-end)
+    .script-box {
+        background: #1e1e1e;
+        padding: 15px;
+        border-radius: 10px;
+        margin-top: 20px;
+        display: none;
+    }
 
-local Frame = Instance.new("Frame")
-Frame.Size = UDim2.new(0, 250, 0, 140)
-Frame.Position = UDim2.new(0.5, -125, 0.5, -70)
-Frame.BackgroundColor3 = Color3.fromRGB(25,25,25)
-Frame.BackgroundTransparency = 0.1
-Frame.Active = true
-Frame.Draggable = true
-Frame.Parent = ScreenGui
+    .script-box h2 {
+        margin-top: 0;
+        font-size: 18px;
+    }
 
-local UICorner = Instance.new("UICorner")
-UICorner.CornerRadius = UDim.new(0, 10)
-UICorner.Parent = Frame
+    .script {
+        background: #000;
+        padding: 10px;
+        border-radius: 6px;
+        font-size: 13px;
+        word-break: break-all;
+    }
 
-local Header = Instance.new("Frame")
-Header.Size = UDim2.new(1, 0, 0, 40)
-Header.BackgroundColor3 = Color3.fromRGB(35,35,35)
-Header.Parent = Frame
+    .copy-btn {
+        margin-top: 10px;
+        width: 100%;
+        background: #22c55e;
+    }
 
-local HeaderCorner = Instance.new("UICorner")
-HeaderCorner.CornerRadius = UDim.new(0, 10)
-HeaderCorner.Parent = Header
+    .success {
+        text-align: center;
+        color: #22c55e;
+        margin-top: 8px;
+        display: none;
+    }
+</style>
+</head>
+<body>
 
-local title = Instance.new("TextLabel")
-title.Size = UDim2.new(1, 0, 1, 0)
-title.Text = "☠️ ThanhNeBro ☠️"
-title.TextScaled = true
-title.TextColor3 = Color3.fromRGB(255,200,0)
-title.BackgroundTransparency = 1
-title.Font = Enum.Font.GothamBold
-title.Parent = Header
+<div class="container">
+    <h1>Tthanhhub All Script</h1>
+    <p>Enter Key</p>
 
-local function createToggle(name, yPos, callback)
-    local btn = Instance.new("TextButton")
-    btn.Size = UDim2.new(1, -40, 0, 35)
-    btn.Position = UDim2.new(0, 20, 0, yPos)
-    btn.Text = name .. ": OFF"
-    btn.TextScaled = true
-    btn.Font = Enum.Font.GothamSemibold
-    btn.TextColor3 = Color3.new(1,1,1)
-    btn.BackgroundColor3 = Color3.fromRGB(50,50,50)
-    btn.Parent = Frame
+    <div class="row">
+        <input type="text" id="keyInput" placeholder="Nhập key tại đây">
+        <button onclick="getKey()">Get Key</button>
+    </div>
 
-    local corner = Instance.new("UICorner")
-    corner.CornerRadius = UDim.new(0, 8)
-    corner.Parent = btn
+    <div class="row">
+        <button style="width:100%" onclick="checkKey()">Nhập Key</button>
+    </div>
 
-    btn.MouseButton1Click:Connect(function()
-        local state = callback()
-        btn.Text = name .. ": " .. (state and "ON" or "OFF")
-        btn.BackgroundColor3 = state and Color3.fromRGB(0,170,0) or Color3.fromRGB(50,50,50)
-    end)
-end
+    <div class="script-box" id="scriptBox">
+        <h2>The Strongest Battleground</h2>
+        <div class="script" id="scriptText">
+loadstring(game:HttpGet("https://raw.githubusercontent.com/kaimm2/TSB/refs/heads/main/Tthanh%20Tong%20Hop%20Tech.txt"))()
+        </div>
+        <button class="copy-btn" onclick="copyScript()">Copy</button>
+        <div class="success" id="successMsg">✅ Copy thành công!</div>
+    </div>
+</div>
 
-createToggle("Auto Slap", 50, function()
-    auto = not auto
-    return auto
-end)
+<script>
+const correctKey = "a5044604-3a1e-4688-b9ff-eed444da2a5d";
 
-createToggle("Tool Slap", 90, function()
-    toolMode = not toolMode
-    return toolMode
-end)
+function getKey() {
+    window.open("https://jnkie.com/flow/4237127f-a533-4512-9e08-4ff16278534c", "_blank");
+}
 
-UserInputService.InputBegan:Connect(function(input, gameProcessed)
-    if not gameProcessed and input.KeyCode == Enum.KeyCode.P then
-        Frame.Visible = not Frame.Visible
-    end
-end)
+function checkKey() {
+    const input = document.getElementById("keyInput").value.trim();
+    if (input === correctKey) {
+        document.getElementById("scriptBox").style.display = "block";
+    } else {
+        alert("❌ Key sai rồi!");
+    }
+}
+
+function copyScript() {
+    const text = document.getElementById("scriptText").innerText;
+    navigator.clipboard.writeText(text).then(() => {
+        const msg = document.getElementById("successMsg");
+        msg.style.display = "block";
+        setTimeout(() => {
+            msg.style.display = "none";
+        }, 2000);
+    });
+}
+</script>
+
+</body>
+</html>
